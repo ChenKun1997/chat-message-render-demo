@@ -20,29 +20,32 @@ export function Message({ message, onBlockUpdate }: MessageProps) {
   const isStreaming = message.isStreaming;
 
   return (
-    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-6`}>
-      <div className={`max-w-[80%] ${isUser ? 'order-2' : 'order-1'}`}>
+    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-8 group`}>
+      <div className={`${isUser ? 'max-w-[85%] sm:max-w-[75%]' : 'max-w-[95%] sm:max-w-[90%]'} ${isUser ? 'order-2' : 'order-1'}`}>
         {/* Message header with role and timestamp */}
-        <div className={`flex items-center mb-2 ${isUser ? 'justify-end' : 'justify-start'}`}>
-          <div className={`flex items-center space-x-2 ${isUser ? 'flex-row-reverse space-x-reverse' : ''}`}>
+        <div className={`flex items-center mb-3 ${isUser ? 'justify-end' : 'justify-start'}`}>
+          <div className={`flex items-center space-x-3 ${isUser ? 'flex-row-reverse space-x-reverse' : ''}`}>
             {/* Avatar */}
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-              isUser 
-                ? 'bg-blue-600 text-white' 
-                : 'bg-gray-600 text-white'
+            <div className={`relative w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold shadow-lg transition-transform duration-200 group-hover:scale-105 ${
+              isUser
+                ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-blue-500/25 ring-2 ring-blue-500/20'
+                : 'bg-gradient-to-br from-gray-600 to-gray-800 dark:from-gray-700 dark:to-gray-900 text-white shadow-gray-600/25 ring-2 ring-gray-500/20'
             }`}>
               {isUser ? 'U' : 'AI'}
+              {!isUser && (
+                <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-emerald-400 to-cyan-400 rounded-full animate-pulse shadow-sm"></div>
+              )}
             </div>
-            
+
             {/* Role and timestamp */}
-            <div className={`text-xs text-gray-500 dark:text-gray-400 ${isUser ? 'text-right' : 'text-left'}`}>
-              <div className="font-medium">
+            <div className={`text-xs ${isUser ? 'text-right' : 'text-left'}`}>
+              <div className="font-semibold text-gray-700 dark:text-gray-300 mb-1">
                 {isUser ? 'You' : 'Assistant'}
               </div>
-              <div>
-                {message.timestamp.toLocaleTimeString([], { 
-                  hour: '2-digit', 
-                  minute: '2-digit' 
+              <div className="text-gray-500 dark:text-gray-400 font-medium">
+                {message.timestamp.toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit'
                 })}
               </div>
             </div>
@@ -50,10 +53,10 @@ export function Message({ message, onBlockUpdate }: MessageProps) {
         </div>
 
         {/* Message content */}
-        <div className={`rounded-lg px-4 py-3 ${
+        <div className={`relative rounded-2xl px-5 py-4 shadow-lg transition-all duration-200 group-hover:shadow-xl ${
           isUser
-            ? 'bg-blue-600 text-white ml-auto'
-            : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100'
+            ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white ml-auto shadow-blue-500/25 ring-1 ring-blue-500/20'
+            : 'bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-900 dark:text-gray-100 shadow-gray-900/10 dark:shadow-gray-100/10 ring-1 ring-gray-200/50 dark:ring-gray-700/50'
         }`}>
           {/* For user messages, show simple text */}
           {isUser ? (

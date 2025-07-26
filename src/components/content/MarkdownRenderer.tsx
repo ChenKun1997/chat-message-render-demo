@@ -59,16 +59,20 @@ export function MarkdownRenderer({ block }: ContentRendererProps) {
               {children}
             </blockquote>
           ),
-          code: ({ inline, children }) => {
-            if (inline) {
+          code: (props) => {
+            const { children, className, ...rest } = props;
+            const match = /language-(\w+)/.exec(className || '');
+            const isInline = !match; // If no language match, it's inline code
+
+            if (isInline) {
               return (
-                <code className="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm font-mono text-gray-800 dark:text-gray-200">
+                <code className="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm font-mono text-gray-800 dark:text-gray-200" {...rest}>
                   {children}
                 </code>
               );
             }
             return (
-              <code className="block bg-gray-100 dark:bg-gray-800 p-4 rounded-lg text-sm font-mono text-gray-800 dark:text-gray-200 overflow-x-auto">
+              <code className="block bg-gray-100 dark:bg-gray-800 p-4 rounded-lg text-sm font-mono text-gray-800 dark:text-gray-200 overflow-x-auto" {...rest}>
                 {children}
               </code>
             );
