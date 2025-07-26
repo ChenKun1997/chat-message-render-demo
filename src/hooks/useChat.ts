@@ -123,7 +123,7 @@ export function useChat(): UseChatReturn {
     // Connect to SSE endpoint for streaming response
     try {
       await connect({
-        url: `/api/chat/stream?scenario=${encodeURIComponent(scenario)}`,
+        url: `/api/chat/stream?scenario=${content.trim()}`,
         headers: {
           'Content-Type': 'application/json',
         },

@@ -73,7 +73,7 @@ function findNextMarker(content: string, startIndex: number = 0): {
 export function processContent(content: string): ContentBlock[] {
   const blocks: ContentBlock[] = [];
   let currentIndex = 0;
-  const openBlocks: Map<ContentType, { startIndex: number; marker: MarkerConfig }> = new Map();
+  const openBlocks: Map<ContentType, { startIndex: number; marker: MarkerConfig;blockId?:string }> = new Map();
 
   while (currentIndex < content.length) {
     const nextMarker = findNextMarker(content, currentIndex);
@@ -82,12 +82,23 @@ export function processContent(content: string): ContentBlock[] {
       // No more markers, add remaining content as markdown
       const remainingContent = content.slice(currentIndex).trim();
       if (remainingContent) {
-        blocks.push({
-          id: uuidv4(),
-          type: 'markdown',
-          content: remainingContent,
-          isComplete: true
-        });
+        // Check if this content is part of an open special block
+        let isPartOfSpecialBlock = false;
+        for (const [type, { startIndex }] of openBlocks) {
+          if (currentIndex >= startIndex) {
+            isPartOfSpecialBlock = true;
+            break;
+          }
+        }
+        
+        if (!isPartOfSpecialBlock) {
+          blocks.push({
+            id: uuidv4(),
+            type: 'markdown',
+            content: remainingContent,
+            isComplete: true
+          });
+        }
       }
       break;
     }
@@ -106,21 +117,49 @@ export function processContent(content: string): ContentBlock[] {
         });
       }
 
-      // Start a new special content block
-      openBlocks.set(marker.type, { startIndex: index + marker.start.length, marker });
+      // Start a new special content block with loading state
+      const blockId = uuidv4();
+      openBlocks.set(marker.type, { 
+        startIndex: index + marker.start.length, 
+        marker,
+        blockId 
+      });
+      
+      // Immediately create a loading block
+      // blocks.push({
+      //   id: blockId,
+      //   type: marker.type,
+      //   content: '',
+      //   isComplete: false,
+      //   isLoading: true
+      // });
+      
       currentIndex = index + marker.start.length;
     } else {
       // End marker found
       const openBlock = openBlocks.get(marker.type);
       if (openBlock) {
-        // Extract content between start and end markers
+        // Find the existing loading block and update it with actual content
         const blockContent = content.slice(openBlock.startIndex, index).trim();
-        blocks.push({
-          id: uuidv4(),
-          type: marker.type,
-          content: blockContent,
-          isComplete: true
-        });
+        const loadingBlockIndex = blocks.findIndex(block => block.id === openBlock.blockId);
+        
+        if (loadingBlockIndex !== -1) {
+          // Update the existing loading block with actual content
+          blocks[loadingBlockIndex] = {
+            ...blocks[loadingBlockIndex],
+            content: blockContent,
+            isComplete: true,
+            isLoading: false
+          };
+        } else {
+          // Fallback: create new block if somehow the loading block was lost
+          blocks.push({
+            id: uuidv4(),
+            type: marker.type,
+            content: blockContent,
+            isComplete: true
+          });
+        }
 
         openBlocks.delete(marker.type);
         currentIndex = index + marker.end.length;
@@ -153,7 +192,8 @@ export function updateContentBlocks(
   existingBlocks: ContentBlock[],
   newContent: string
 ): ContentBlock[] {
-  // Reprocess the entire content to handle streaming updates
+  // Simply re-process the entire content
+  // This ensures consistency with the initial processing
   return processContent(newContent);
 }
 
