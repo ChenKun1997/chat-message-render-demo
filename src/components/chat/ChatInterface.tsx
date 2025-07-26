@@ -7,7 +7,6 @@ import { useChat } from '@/hooks/useChat';
 import { MessageList } from './MessageList';
 import { ChatInput } from './ChatInput';
 import { Button } from '@/components/ui/Button';
-import { DemoControls } from '@/components/demo/DemoControls';
 
 /**
  * Complete chat interface with header, messages, and input

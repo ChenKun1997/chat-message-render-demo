@@ -4,7 +4,7 @@
 'use client';
 import React from 'react';
 import { ChatMessage } from '@/types/chat';
-import { ContentRenderer } from '@/components/content/ContentRenderer';
+import { ContentRenderer } from '@/components/chat/ContentRenderer';
 import { LoadingDots } from '@/components/content/SkeletonLoader';
 
 interface MessageProps {

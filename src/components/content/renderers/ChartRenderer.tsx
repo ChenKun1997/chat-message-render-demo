@@ -21,7 +21,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { ContentRendererProps, ChartData } from '@/types/content';
-import { SkeletonLoader } from './SkeletonLoader';
+import { SkeletonLoader } from '../SkeletonLoader';
 
 /**
  * Color palette for charts
